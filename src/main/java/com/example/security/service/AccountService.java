@@ -1,8 +1,13 @@
 package com.example.security.service;
 
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+
 import com.example.security.model.Account;
 import com.example.security.repository.AccountRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,13 +15,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
 
 @Service
 public class AccountService implements UserDetailsService {
@@ -49,5 +49,17 @@ public class AccountService implements UserDetailsService {
     //권한들을 의미
     private Collection<? extends GrantedAuthority> authorities() {
         return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+
+    public boolean joinAccount(String userName, String password) {
+
+        Optional<Account> candidateAccount = accountRepository.findByUserName(userName);
+        if (candidateAccount.isPresent()) {
+            return false;
+        } else {
+            createAccount(userName, password);
+            return true;
+        }
     }
 }
